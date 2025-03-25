@@ -3,7 +3,7 @@ include <../prepared/hashedSquare.scad>;
 include <../prepared/cardBoxes.scad>;
 
 boxX = 143;
-boxY = 180;
+boxY = 193;
 boxZ = 65;
 material = 1.2;
 
