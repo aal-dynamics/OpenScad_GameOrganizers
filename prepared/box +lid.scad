@@ -66,8 +66,8 @@ module lid(x = 0.0, y = 0.0, z = 0.0, material = 1.2, eco = [false, false, false
 // y = 65;
 // z = 95;
 
-x = 67;
-y = 95;
-z = 32;
+// x = 67;
+// y = 95;
+// z = 32;
 
-boxWithLid(x = x, y = y, z = z, hashSpace = 10, print = true);
+// boxWithLid(x = x, y = y, z = z, hashSpace = 10, print = true);
