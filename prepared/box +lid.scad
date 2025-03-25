@@ -1,117 +1,60 @@
 //include <hashedSquare.scad>;
+include <cube+Support.scad>
 include <box.scad>;
 
-module lid_add(x = 1.6, y = 1.2, z = 5, side = true, material = 1.2) {
-	cube([x, y, z]);
-
-	if (side) {
-		translate([0, 0, z - material])// -x / 2]) 
-			rotate([90,90,90])
-				cylinder(h = x, d = material, $fn = 10);
-		translate([0, y, z - material]) 
-			rotate([90,90,90])
-				cylinder(h = x, d = material, $fn = 10);
-	}
-	if (!side) {
-		translate([0, 0, z - material])
-			rotate([0, 90, 90])
-				cylinder(h = y, d = material, $fn = 10);
-		translate([x, 0, z - material])
-			rotate([0, 90, 90])
-				cylinder(h = y, d = material, $fn = 10);
-	}
-}
-
-module boxWithFrame(x = 0.0, y = 0.0, z = 0.0, material = 1.2, eco = [false, false, false, false, true, true], hashSpace = 7) {
+module boxWithLid(x = 0.0, y = 0.0, z = 0.0, material = 1.2, eco = [false, false, false, false, true, true], hashSpace = 7, toleranceSpace = 0.2, print = false) {
 	// eco[0] = front	// eco[1] = left	// eco[2] = back	// eco[3] = right	// eco[4] = bottom	// eco[5] = lid
 
-	//box(x = x, y = y, z = zWithoutLid, material = material, eco = eco, hashSpace = hashSpace);
-	box(x = x, y = y, z = z, material = material, eco = eco, hashSpace = hashSpace);
-	translate([0, 0, z - material *2]){
-		cube([x, material *2, material]);
-		translate([0, 0, -material])
-			rotate([-36, 0, 0])
-				cube([x, material, material *2]);
+	lidPosX = print ? x + 10 : material + toleranceSpace;
+	lidPosZ = print ? 0 : z - material * 1.5;
+
+	translate(v = [lidPosX, 0 , lidPosZ])
+		lid(x = x - toleranceSpace * 2, y = y, z = z, hashSpace = hashSpace);
+	
+	difference() {
+		box(x = x, y = y, z = z, material = material, eco = eco, hashSpace = hashSpace);
+		translate(v = [material, -material, z - material * 1.5])
+			cube(size = [x - material *2, material * 3, material * 3]);
 	}
 	
-	translate([0, y -material *2, z - material *2]){
-		cube([x, material *2, material]);
-		translate ([0, material + 0.2, -material - 0.7])
-			rotate([36, 0, 0])
-				cube([x, material , material*2]);
-	}
-		
-	translate([0, 0, z - material * 2]){
-		cube([material *2, y, material]);
-		translate([0, 0, - material])
-		 	rotate([0,36,0])
-				cube([material, y, material * 2]);
-	}
+	translate(v = [material, 0, z - material * 3])
+		cubeLeftSupported(y = y, z = material * 1.5);
+	translate(v = [material, 0, z - material])
+		cubeLeftSupported(y = y, z = material);
+	translate(v = [material, y - 5, z - material * 2]) 
+		rotate(a = [0, 0, 45])
+			cube(size = [material, material, material * 2]);
 	
-	translate([x - material * 2, 0, z - material * 2]){
-		cube([material *2, y, material]);
-		translate([material + 0.2, 0, -material * 1.6])
-		  	rotate([0, -36, 0])
-		 		cube([material, y, material * 2]);
-	}
+	translate(v = [x - material * 2, 0, z- material * 3])
+		cubeRightSupported(y = y, z = material * 1.5);
+	translate(v = [x - material * 2, 0, z - material])
+		cubeRightSupported(y = y, z = material);
+	translate(v = [x - material, y - 5, z - material * 2]) 
+		rotate(a = [0, 0, 45])
+			cube(size = [material, material, material * 2]);
+	
 }
 
-module lid(x = 0.0, y = 0.0, z = 0.0, material = 1.2, eco = [false, false, false, false, true, true], hashSpace = 7, forDiff = false) {
+module lid(x = 0.0, y = 0.0, z = 0.0, material = 1.2, eco = [false, false, false, false, true, true], hashSpace = 7) {
 	//translate([x + 20 + material, material, 0]){
 	lidX = x - material * 2;
-	lidY = y - material * 2;
+	lidY = y - material;
 	
-	lidXPart = round(lidX/ 3) -1;
-	lidYPart = round(lidY/ 3) -1;
-	
-	box(x = x, y = y, z = material, eco = [eco[0], eco[1], eco[2], eco[3], eco[5]], hashSpace = hashSpace);
-	
-	if (!forDiff) {
-		translate([-material, (y - lidYPart) /2, 0])
-			lid_add(x = material * 2, y = lidYPart, z = 5);
-		
-		translate([lidX + material, (y - lidYPart) /2, 0])
-			lid_add(x = material * 2, y = lidYPart, z = 5);
-		
-		translate([(x - lidXPart) / 2, -material, 0])
-			lid_add(x = lidXPart, y = material * 2, z = 5, side = false);
-
-		translate([(x - lidXPart) / 2, lidY + material, 0])
-			lid_add(x = lidXPart, y = material * 2, z = 5, side = false);
-	}
-
-	if (forDiff) {
-		translate([-material * 2, (y - lidYPart) /2, 0])
-			lid_add(x = material * 4, y = lidYPart, z = 5);
-		
-		translate([lidX, (y - lidYPart) /2, 0])
-			lid_add(x = material * 4, y = lidYPart, z = 5);
-		
-		translate([(x - lidXPart) / 2, -material *2, 0])
-			lid_add(x = lidXPart, y = material * 4, z = 5, side = false);
-
-		translate([(x - lidXPart) / 2, lidY, 0])
-			lid_add(x = lidXPart, y = material * 4, z = 5, side = false);
-	}
-}
-
-module lidBox(x = 0.0, y = 0.0, z = 0.0, material = 1.2, eco = [false, false, false, false, true, true], hashSpace = 7) {
-	// eco[0] = front	// eco[1] = left	// eco[2] = back	// eco[3] = right	// eco[4] = bottom	// eco[5] = lid
-
-	zWithoutLid = z - material;
-	lidX = x - material * 2;
-	lidY = y - material * 2;
-
 	difference() {
-		boxWithFrame(x = x, y = y, z = zWithoutLid, material = material, eco = eco, hashSpace = hashSpace);
-		
-		translate([x - material, material, zWithoutLid])
-			rotate([0, 180, 0])
-				lid(x = lidX, y = lidY, z = material, eco = eco, hashSpace = hashSpace, forDiff = true);
-	}
+		box(x = lidX, y = lidY, z = material, eco = [eco[0], eco[1], eco[2], eco[3], eco[5]], hashSpace = hashSpace);
+		translate(v = [0, -material, material * 0.5])
+			rotate(a = [0, -45, 0])
+				cube(size = [material, lidY + material * 2, material]);
+		translate(v = [0, lidY - 5 + material, -material]) 
+			rotate(a = [0, 0, 45])
+				cube(size = [material, material, material * 3]);
 
-	translate([x + 20 + material, material, 0]){
-		lid(x = lidX, y = lidY, z = material, eco = eco, hashSpace = hashSpace);
+		translate(v = [lidX, -material, material * 0.5])
+			rotate(a = [0, -45, 0])
+				cube(size = [material, lidY + material * 2, material]);
+		translate(v = [lidX, lidY - 5 + material, -material]) 
+			rotate(a = [0, 0, 45])
+				cube(size = [material, material, material * 3]);
 	}
 }
 
@@ -127,4 +70,4 @@ x = 67;
 y = 95;
 z = 32;
 
-lidBox(x = x, y = y, z = z, hashSpace = 10);
+boxWithLid(x = x, y = y, z = z, hashSpace = 10, print = true);
