@@ -7,25 +7,22 @@ module boxWithLid(x = 0.0, y = 0.0, z = 0.0, material = 1.2, eco = [false, false
 
 	translate(v = [x + 10, 0 , 0])
 		lid(x = x - toleranceSpace * 2, y = y, z = z, hashSpace = hashSpace);
-	//todo: kanten der oberen seite mit 45° versehen, weil oberer einschub rahmen stärker ist (material * 1.5)
 	
 	difference() {
 		box(x = x, y = y, z = z, material = material, eco = eco, hashSpace = hashSpace);
-		//translate(v = [material, -material, z - material * 2 - toleranceSpace]) 
-		translate(v = [material, -material, z - material * 2])
-			#cube(size = [x - material *2, material * 3, material * 3]);
+		translate(v = [material, -material, z - material])
+			cube(size = [x - material *2, material * 3, material * 2]);
 	}
-	//translate(v = [material, 0, z - material * 4 - toleranceSpace])
-	translate(v = [material, 0, z - material * 4])
-		cubeLeftSupported(y = y, z = material * 2);
-	translate(v = [material, 0, z - material * 1.5])
-		cubeLeftSupported(y = y, z = material * 1.5, material = material  * 1.5);
 	
-	//translate(v = [x - material * 2, 0, z- material * 4 - toleranceSpace])
-	translate(v = [x - material * 2, 0, z- material * 4])
-		cubeRightSupported(y = y, z = material * 2);
-	translate(v = [x - material * 2.5, 0, z - material - 0.6])
-		cubeRightSupported(y = y, z = material * 1.5, material = material * 1.5);
+	translate(v = [material, 0, z - material * 2.5])
+		cubeLeftSupported(y = y, z = material * 1.5);
+	translate(v = [material, 0, z - material])
+		cubeLeftSupported(y = y, z = material);
+	
+	translate(v = [x - material * 2, 0, z- material * 2.5])
+		cubeRightSupported(y = y, z = material * 1.5);
+	translate(v = [x - material * 2, 0, z - material])
+		cubeRightSupported(y = y, z = material);
 	
 	//todo: wölbung am hinteren teil des einschubes, damit der deckel nicht raus rutscht
 	
@@ -36,9 +33,15 @@ module lid(x = 0.0, y = 0.0, z = 0.0, material = 1.2, eco = [false, false, false
 	lidX = x - material * 2;
 	lidY = y - material;
 	
-	box(x = lidX, y = lidY, z = material, eco = [eco[0], eco[1], eco[2], eco[3], eco[5]], hashSpace = hashSpace);
-	
-
+	difference() {
+		box(x = lidX, y = lidY, z = material, eco = [eco[0], eco[1], eco[2], eco[3], eco[5]], hashSpace = hashSpace);
+		translate(v = [0, -material, material * 0.5])
+			rotate(a = [0, -45, 0])
+				cube(size = [material, lidY + material * 2, material]);
+		translate(v = [lidX, -material, material * 0.5])
+			rotate(a = [0, -45, 0])
+				cube(size = [material, lidY + material * 2, material]);
+	}
 }
 
 // x = 100;
