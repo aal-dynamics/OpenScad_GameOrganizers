@@ -2,7 +2,7 @@
 include <cube+Support.scad>
 include <box.scad>;
 
-module boxWithLid(x = 0.0, y = 0.0, z = 0.0, material = 1.2, eco = [false, false, false, false, true, true], hashSpace = 7, toleranceSpace = 0.3) {
+module boxWithLid(x = 0.0, y = 0.0, z = 0.0, material = 1.2, eco = [false, false, false, false, true, true], hashSpace = 7, toleranceSpace = 0.2) {
 	// eco[0] = front	// eco[1] = left	// eco[2] = back	// eco[3] = right	// eco[4] = bottom	// eco[5] = lid
 
 	translate(v = [x + 10, 0 , 0])
@@ -35,12 +35,14 @@ module lid(x = 0.0, y = 0.0, z = 0.0, material = 1.2, eco = [false, false, false
 	
 	difference() {
 		box(x = lidX, y = lidY, z = material, eco = [eco[0], eco[1], eco[2], eco[3], eco[5]], hashSpace = hashSpace);
-		translate(v = [0, -material, material * 0.5])
+		//translate(v = [0, -material, material * 0.5])
+		translate(v = [0, -material, 0])
 			rotate(a = [0, -45, 0])
-				cube(size = [material, lidY + material * 2, material]);
-		translate(v = [lidX, -material, material * 0.5])
+				cube(size = [material * 2, lidY + material * 2, material]);
+		//translate(v = [lidX, -material, material * 0.5])
+		translate(v = [lidX, -material, 0])
 			rotate(a = [0, -45, 0])
-				cube(size = [material, lidY + material * 2, material]);
+				cube(size = [material, lidY + material * 2, material * 2]);
 	}
 }
 
